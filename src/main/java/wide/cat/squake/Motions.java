@@ -37,7 +37,7 @@ public class Motions {
     }
 
     public static float getSlipperiness(Entity entity, BlockPos pos) {
-        return entity.world.getBlockState(pos).getBlock().getSlipperiness();
+        return entity.getWorld().getBlockState(pos).getBlock().getSlipperiness();
     }
 
     public static double getSideMove(Vec3d relative) {

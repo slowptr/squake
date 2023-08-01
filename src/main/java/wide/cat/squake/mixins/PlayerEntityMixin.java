@@ -41,7 +41,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "handleFallDamage", at = @At("HEAD"))
     public void beforeFall(float fallDistance, float damageMultiplier, DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
-        if (world.isClient) return;
+        if (getWorld().isClient) return;
         wasVelocityChangedBeforeFall = velocityDirty;
     }
 
@@ -49,7 +49,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             from = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;increaseStat(Lnet/minecraft/util/Identifier;I)V"),
             to = @At("TAIL")))
     public void afterFall(float fallDistance, float damageMultiplier, DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
-        if (world.isClient) return;
+        if (getWorld().isClient) return;
         velocityDirty = wasVelocityChangedBeforeFall;
     }
 }

@@ -9,9 +9,6 @@
     "LivingEntityMixin",
     "PlayerEntityMixin"
   ],
-  "client": [
-    "InGameHudMixin"
-  ],
   "injectors": {
     "defaultRequire": 1
   }

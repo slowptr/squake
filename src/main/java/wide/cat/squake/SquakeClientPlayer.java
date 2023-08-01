@@ -27,7 +27,7 @@ public class SquakeClientPlayer {
     private static final ConfigValues configValues = ConfigHandler.getConfigValues();
 
     public static boolean moveEntityWithHeading(PlayerEntity player, float sideMove, float upMove, float forwardMove) {
-        if (!player.world.isClient())
+        if (!player.getWorld().isClient())
             return false;
 
         if (!configValues.enabled)
@@ -50,7 +50,7 @@ public class SquakeClientPlayer {
     }
 
     public static void beforeOnLivingUpdate(PlayerEntity player) {
-        if (!player.world.isClient())
+        if (!player.getWorld().isClient())
             return;
 
         if (!baseVelocities.isEmpty()) {
@@ -66,7 +66,7 @@ public class SquakeClientPlayer {
     }
 
     public static boolean moveRelative(PlayerEntity player, float sideMove, float upMove, float forwardMove, float friction) {
-        if (!player.world.isClient())
+        if (!player.getWorld().isClient())
             return false;
 
         if (!configValues.enabled)
@@ -90,7 +90,7 @@ public class SquakeClientPlayer {
     }
 
     public static void afterJump(PlayerEntity player) {
-        if (!player.world.isClient())
+        if (!player.getWorld().isClient())
             return;
 
         if (!configValues.enabled)
@@ -187,14 +187,14 @@ public class SquakeClientPlayer {
         int j = MathHelper.floor(player.getX());
         int i = MathHelper.floor(player.getY() - 0.20000000298023224D - player.getMountedHeightOffset());
         int k = MathHelper.floor(player.getZ());
-        BlockState blockState = player.world.getBlockState(new BlockPos(j, i, k));
+        BlockState blockState = player.getWorld().getBlockState(new BlockPos(j, i, k));
 
         Vec3d motion = player.getVelocity();
         Random random = player.getRandom();
 
         if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
             for (int iParticle = 0; iParticle < (int)(numParticles * configValues.particleMultiplier); iParticle++) {
-                player.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), player.getX() + (random.nextFloat() - 0.5D) * player.getWidth(), player.getBoundingBox().minY + 0.1D, player.getZ() + (random.nextFloat() - 0.5D) * player.getWidth(), -motion.x * 4.0D, 1.5D, -motion.z * 4.0D);
+                player.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), player.getX() + (random.nextFloat() - 0.5D) * player.getWidth(), player.getBoundingBox().minY + 0.1D, player.getZ() + (random.nextFloat() - 0.5D) * player.getWidth(), -motion.x * 4.0D, 1.5D, -motion.z * 4.0D);
             }
         }
     }
@@ -215,12 +215,12 @@ public class SquakeClientPlayer {
 
     private static void minecraft_ApplyGravity(PlayerEntity player) {
         double motionY = Motions.getMotionY(player);
-        BlockPos blockPos = new BlockPos(player.getPos().x, player.getPos().y - 0.5000001D, player.getPos().z);
+        BlockPos blockPos = new BlockPos((int) player.getPos().x, (int) (player.getPos().y - 0.5000001D), (int) player.getPos().z);
 
         if (player.hasStatusEffect(StatusEffects.LEVITATION)) {
             motionY += (0.05D * (double)(player.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - motionY) * 0.2D;
-        } else if (player.world.isClient && (!player.world.isChunkLoaded(blockPos) || player.world.getChunk(blockPos).getStatus() != ChunkStatus.FULL)) {
-            if (player.getY() > player.world.getBottomY()) {
+        } else if (player.getWorld().isClient && (!player.getWorld().isChunkLoaded(blockPos) || player.getWorld().getChunk(blockPos).getStatus() != ChunkStatus.FULL)) {
+            if (player.getY() > player.getWorld().getBottomY()) {
                 motionY = -0.1D;
             } else {
                 motionY = 0.0D;
@@ -244,6 +244,7 @@ public class SquakeClientPlayer {
     }
 
     private static void minecraft_SwingLimbsBasedOnMovement(PlayerEntity player) {
+        /*
         player.lastLimbDistance = player.limbDistance;
         double d0 = player.getX() - player.prevX;
         double d1 = player.getZ() - player.prevZ;
@@ -251,6 +252,8 @@ public class SquakeClientPlayer {
         if (f6 > 1.0F) f6 = 1.0F;
         player.limbDistance += (f6 - player.limbDistance) * 0.4F;
         player.limbAngle += player.limbDistance;
+         */
+        // TODO: recalculate using player.limbAnimator
     }
 
     private static void minecraft_WaterMove(PlayerEntity player, float sideMove, float upMove, float forwardMove) {
@@ -347,7 +350,7 @@ public class SquakeClientPlayer {
 
                 if (configValues.sharkingEnabled && configValues.sharkingSurfTension > 0.0D && isJumping(player) && Motions.getMotionY(player) < 0.0F) {
                     Box offsetBox = player.getBoundingBox().offset(player.getVelocity());
-                    boolean isFallingIntoWater = player.world.containsFluid(offsetBox);
+                    boolean isFallingIntoWater = player.getWorld().containsFluid(offsetBox);
 
                     if (isFallingIntoWater)
                         Motions.setMotionY(player, Motions.getMotionY(player) * configValues.sharkingSurfTension);
